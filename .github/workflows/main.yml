@@ -1,0 +1,33 @@
+name: Pepe Daily Forecast
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Chạy vào 7h sáng mỗi ngày
+  workflow_dispatch:      # Cho phép bạn nhấn nút chạy thủ công nếu muốn
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run prediction
+        run: python predict_pepe.py
+
+      - name: Commit and push results
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add .
+          git commit -m "Update daily forecast" || exit 0
+          git push
